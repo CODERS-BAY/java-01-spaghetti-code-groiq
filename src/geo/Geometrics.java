@@ -1,6 +1,9 @@
 package geo;
 
 import java.util.List;
+
+import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -25,27 +28,20 @@ public class Geometrics {
         PrintTools.printLines(myColl.getPerimeters());
 
         SquareCollector mySquares = SquareCollector.buildFromRange(4);
-        // System.out.println(Arrays.toString(mySquares.lengths));
         PrintTools.printLines(mySquares.getAreas());
         PrintTools.printLines(mySquares.getPerimeters());
 
 
+        System.out.println("We can also calculate some volumes");
 
-        // System.out.println("We can also calculate some volumes");
-        // /*
-        //     z is our height
-        //     y is our radius
-        //  */
-        // System.out.println("Zone of a sphere");
-        // double v = (Math.PI * z * (3 * Math.pow(y, 2) + 3 * Math.pow(x, 2) + Math.pow(z, 2))) / 6;
-        // System.out.println(v);
+        System.out.println("Zone of a sphere");
+        System.out.println(ZoneOfASphere.volume(10.0, 5.0, 3.0));
 
-        // System.out.println("Sphere with cylinder");
-        // System.out.println(Math.PI * Math.pow(z, 3) / 6);
+        System.out.println("Sphere with cylinder");
+        System.out.println(SphereWithCylinder.volume(3.0));
 
-        // System.out.println("Ungula");
-        // System.out.println((double) (2 * x3 * z3) / 3);
-        // System.out.println(Rectangle.area(1.0, 2.0));
+        System.out.println("Ungula");
+        System.out.println(Ungula.volume(45.0, 69.0));
     }
 
 
@@ -174,11 +170,7 @@ public class Geometrics {
             return result;
         }
 
-
-
     }
-
-
 
     private  class Rectangle {
 
@@ -229,6 +221,22 @@ public class Geometrics {
 
     }
 
+    private class ZoneOfASphere {
+        static double volume(double x, double y, double z) {
+            return (Math.PI * z * (3 * Math.pow(y, 2) + 3 * Math.pow(x, 2) + Math.pow(z, 2))) / 6;
+        }
+    }
 
+    private class SphereWithCylinder {
+        static double volume(double z) {
+            return Math.PI * Math.pow(z, 3) / 6;
+        }
+    }
+
+    private class Ungula {
+        static double volume(double x, double z) {
+            return (2.0 * Math.pow(x, 2) * z) / 3.0;
+        }
+    }
 
 }
