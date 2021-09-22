@@ -20,22 +20,16 @@ public class Geometrics {
 
     public static void main(String[] args) {
 
-        RectangleCollector myColl = RectangleCollector.buildFromRange(3);
+        RectangleCollector myColl = RectangleCollector.buildFromRange(4);
         PrintTools.printLines(myColl.getAreas());
         PrintTools.printLines(myColl.getPerimeters());
 
+        SquareCollector mySquares = SquareCollector.buildFromRange(4);
+        // System.out.println(Arrays.toString(mySquares.lengths));
+        PrintTools.printLines(mySquares.getAreas());
+        PrintTools.printLines(mySquares.getPerimeters());
 
-        // System.out.println("Rectangle area");
-        // System.out.println("x * y = " + x * y);
-        // System.out.println("x1 * y1 = " + x1 * y1);
-        // System.out.println("x2 * y2 = " + x2 * y2);
-        // System.out.println("x3 * y3 = " + x3 * y3);
 
-        // System.out.println("Rectangle perimeter");
-        // System.out.println("x + y = " + (x + y));
-        // System.out.println("x1 + y1 = " + x1 + y1);
-        // System.out.println("x2 + y2 = " + x2 + y2);
-        // System.out.println("x3 + y3 = " + x3 + y3);
 
         // System.out.println("We can also calculate some volumes");
         // /*
@@ -141,6 +135,44 @@ public class Geometrics {
 
     private static class SquareCollector {
 
+        private final double[] lengths;
+
+        static SquareCollector buildFromRange(int limit) {
+            double[] lengths = new double[limit];
+            for (int i = 0; i < lengths.length; i++) {
+                lengths[i] = (double) (i + 1);
+            }
+            return new SquareCollector(lengths);
+        }
+
+        SquareCollector(double[] lengths) {
+            this.lengths = lengths;
+        }
+
+        // backlog: stuff like this could be easily refactored  out to a superclass
+        String[] getAreas() {
+            return PrintTools.messageWithHeader("Square area: ", calculateAreas());
+        }
+
+        String[] calculateAreas() {
+            String[] result = new String[lengths.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = Square.areaMsg(lengths[i]);
+            }
+            return result;
+        }
+
+        String[] getPerimeters() {
+            return PrintTools.messageWithHeader("Rectangle perimeter: ", calculatePerimeters());
+        }
+
+        String[] calculatePerimeters() {
+            String[] result = new String[lengths.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = Square.perimterMsg(lengths[i]);
+            }
+            return result;
+        }
 
 
 
@@ -168,7 +200,7 @@ public class Geometrics {
         }
 
         static String perimeterMsg(double len, double wid) {
-            return paramsMsg(len, wid) + "perimter: " + perimeter(len, wid);
+            return paramsMsg(len, wid) + "perimeter: " + perimeter(len, wid);
         }
 
     }
@@ -187,12 +219,12 @@ public class Geometrics {
             return "len: " + len + ", ";
         }
 
-        static String areaMsg(double len, double wid) {
-            return paramsMsg(len) + "area: " + area(len, wid);
+        static String areaMsg(double len) {
+            return paramsMsg(len) + "area: " + area(len);
         }
 
-        static String perimterMsg(double len, double wid) {
-            return paramsMsg(len) + "perimter: " + perimeter(len, wid);
+        static String perimterMsg(double len) {
+            return paramsMsg(len) + "perimeter: " + perimeter(len);
         }
 
     }
