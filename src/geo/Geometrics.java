@@ -21,8 +21,8 @@ public class Geometrics {
     public static void main(String[] args) {
 
         RectangleCollector myColl = RectangleCollector.buildFromRange(3);
-        printLines(myColl.getAreas());
-        printLines(myColl.getPerimeters());
+        PrintTools.printLines(myColl.getAreas());
+        PrintTools.printLines(myColl.getPerimeters());
 
 
         // System.out.println("Rectangle area");
@@ -54,11 +54,25 @@ public class Geometrics {
         // System.out.println(Rectangle.area(1.0, 2.0));
     }
 
-    private static void printLines(String[] lines) {
-        for (String line : lines) {
-            System.out.println(line);
+
+    private class PrintTools {
+
+        static void printLines(String[] lines) {
+            for (String line : lines) {
+                System.out.println(line);
+            }
+            System.out.println();
         }
-        System.out.println();
+
+        static String[] messageWithHeader(String header, String[] msgs) {
+            String[] result = new String[msgs.length + 1];
+            result[0] = header;
+            for (int i = 0; i < msgs.length; i++) {
+                result[i+1] = msgs[i];
+            }
+            return result;
+        }
+
     }
 
     private static class RectangleCollector {
@@ -98,17 +112,9 @@ public class Geometrics {
             this.widths = widths;
         }
 
-        String[] messageWithHeader(String header, String[] msgs) {
-            String[] result = new String[msgs.length + 1];
-            result[0] = header;
-            for (int i = 0; i < msgs.length; i++) {
-                result[i+1] = msgs[i];
-            }
-            return result;
-        }
 
         String[] getAreas() {
-            return messageWithHeader("Rectangle area: ", calculateAreas());
+            return PrintTools.messageWithHeader("Rectangle area: ", calculateAreas());
         }
 
         String[] calculateAreas() {
@@ -120,7 +126,7 @@ public class Geometrics {
         }
 
         String[] getPerimeters() {
-            return messageWithHeader("Rectangle perimeters: ", calculatePerimeters());
+            return PrintTools.messageWithHeader("Rectangle perimeters: ", calculatePerimeters());
         }
 
         String[] calculatePerimeters() {
@@ -130,6 +136,12 @@ public class Geometrics {
             }
             return result;
         }
+
+    }
+
+    private static class SquareCollector {
+
+
 
 
     }
