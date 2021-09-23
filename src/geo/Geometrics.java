@@ -1,18 +1,12 @@
 package geo;
 
-import java.util.List;
-
-// import geo.Geometrics.Shape3DCollection.CuboidCollection;
-
-// import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-
 public class Geometrics {
     // issue: I tried doing stuff like make Rectangle.area(double[] dimensions)  a static method, 
     // but static abstract methods are impossible.
 
+    /**
+     * The basic class stores a Shape identified by its dimensions.
+     */
     private abstract static class Shape {
 
         final double[] dimensions;
@@ -21,27 +15,49 @@ public class Geometrics {
             this.dimensions = dimensions;
         }
 
-        abstract String paramsMsg();
-
-
+        /**
+         * formats the dimensions as a String
+         * @return the dimensons as a String
+         */
+        abstract String dimensionsMsg();
 
     }
 
+    /**
+     * A two-dimensional shape has a perimeter and an area.
+     */
     private abstract static class Shape2D extends Shape {
 
         Shape2D(double[] dimensions) {
             super(dimensions);
         }
 
+        /**
+         * Calculates the area of a two-dimensional shape.
+         * @return the area of the shape
+         */
         abstract double getArea();
+
+        /**
+         * Calculates the perimeter of a two-dimensional shape.
+         * @return the perimeter of the shape
+         */
         abstract double getPerimeter();
 
+        /**
+         * formats the area as a String. Includes the dimensions.
+         * @return the dimensions and area as a String
+         */
         String areaMsg() {
-            return paramsMsg() + ", area: " + getArea();
+            return dimensionsMsg() + ", area: " + getArea();
         }
 
+        /**
+         * formats the perimeter as a String. Includes the dimensions.
+         * @return the dimensions and perimeter as a String
+         */
         String perimeterMsg() {
-            return paramsMsg() + ", perimeter: " + getPerimeter();
+            return dimensionsMsg() + ", perimeter: " + getPerimeter();
         }
 
     }
@@ -60,7 +76,7 @@ public class Geometrics {
             return ( 2 * (dimensions[0] + dimensions[1]) );
         }
 
-        String paramsMsg() {
+        String dimensionsMsg() {
             return "length: " + dimensions[0] + ", width: " + dimensions[1];
         }
 
@@ -80,28 +96,47 @@ public class Geometrics {
             return (dimensions[0] * 4);
         }
 
-        String paramsMsg() {
+        String dimensionsMsg() {
             return "length: " + dimensions[0];
         }
 
     }
 
+    /**
+     * A three-dimensional shape has a surface and a volume.
+     */
     private abstract static class Shape3D extends Shape {
 
         Shape3D(double[] dimensions) {
             super(dimensions);
         }
 
+        /**
+         * Calculates the volume of a three-dimensional shape.
+         * @return the volume of the shape
+         */
         abstract double getVolume();
+
+        /**
+         * Calculates the surface of a three-dimensional shape.
+         * @return the surface of the shape
+         */
         abstract double getSurface();
 
-
+        /**
+         * Formats the volume as a String. Includes the dimensions.
+         * @return the dimensions and volume as a String
+         */
         String volumeMsg() {
-            return paramsMsg() + ", volume: " + getVolume();
+            return dimensionsMsg() + ", volume: " + getVolume();
         }
 
+        /**
+         * Formats the surface as a String. Includes the dimensions.
+         * @return the dimensions and surface as a String
+         */
         String surfaceMsg() {
-            return paramsMsg() + ", perimeter: " + getVolume();
+            return dimensionsMsg() + ", surface: " + getSurface();
         }
 
     }
@@ -117,14 +152,14 @@ public class Geometrics {
         }
         
         double getSurface() {
-            // backlog: i could just store those as fields internally
+            // backlog: maybe i could just store stuff like that as fields internally
             double x = dimensions[0];
             double y = dimensions[1];
             double z = dimensions[2];
             return 2 * (x*y + x*z + y*z);
         }
 
-        String paramsMsg() {
+        String dimensionsMsg() {
             return "x: " + dimensions[0] + ", y: " + dimensions[1] + ", z: " + dimensions[2];
         }
 
@@ -144,77 +179,52 @@ public class Geometrics {
             return 6 * Math.pow(dimensions[0], 2);
         }
 
-        String paramsMsg() {
+        String dimensionsMsg() {
             return "edge length: " + dimensions[0];
         }
 
     }
 
-    // properly subclassing the other figures would be too complex, so I'll just set up some methods
-    private static class ZoneOfASphere {
-        static double volume(double x, double y, double z) {
-            return (Math.PI * z * (3 * Math.pow(y, 2) + 3 * Math.pow(x, 2) + Math.pow(z, 2))) / 6;
-        }
-    }
-
-    private static class SphereWithCylinder {
-        static double volume(double z) {
-            return Math.PI * Math.pow(z, 3) / 6;
-        }
-    }
-
-    private static class Ungula {
-        static double volume(double x, double z) {
-            return (2.0 * Math.pow(x, 2) * z) / 3.0;
-        }
-    }
-
+    /**
+     * Utilities for batch-printing dimension calculations
+     */
     private static class PrintTools {
-
-        static void printLines(String[] lines) {
-            for (String line : lines) {
-                System.out.println(line);
-            }
-            System.out.println();
-        }
-
-        static String[] messageWithHeader(String header, String[] msgs) {
-            String[] result = new String[msgs.length + 2];
-            result[0] = header;
-            for (int i = 0; i < msgs.length; i++) {
-                result[i+1] = msgs[i];
-            }
-            result[result.length -1] = "-------------";
-            return result;
-        }
-
+        /**
+         * Takes a header line and a String array. Prints first the header line, then the array line by line and finally a row of dashes.
+         * @param header
+         * @param msgs
+         */
         static void printWithHeader(String header, String[] msgs) {
-            printLines(messageWithHeader(header, msgs));
+            System.out.println(header);
+            for (String msg : msgs) {
+                System.out.println(msg);
+            }
+            System.out.println("-------------");
         }
-
     }
 
-    // private abstract static class ShapeCollection {
-
-    //     final Shape[] shapes;
-
-    //     ShapeCollection(Shape[] shapes) {
-    //         this.shapes = shapes;
-    //     }
-
-        
-
-    // }
-
+    /**
+     * Manages a collection of two-dimensional shapes. Provides methods to calculate and print perimeters and areas in batch.
+     * 
+     * In theory, this and Shape3DCollection would be subclassed of ShapeCollection, but those two don't share too much logic.
+     * 
+     * Each subclass of ShapeCollection provides a method called buildFromRange() 
+     * that generates shapes with dimensions in a range from 1.0 to n.0 (inclusive).
+     * 
+     * eg. RectangleCollection.buildFromRange(2) generates rectangles with 1.0 * 1.0, 1.0 * 2.0, 2.0 * 1.0 and 2.0 * 2.0.
+     */
     private abstract static class Shape2DCollection  {
 
         final Shape2D[] shapes;
 
         Shape2DCollection(Shape2D[] shapes) {
-            // super(shapes);
             this.shapes = shapes;
         }
 
+        /**
+         * Returns the name of the shape.
+         * @return the name of the shape
+         */
         abstract String getShape();
 
         String[] getAreaMsgs() {
@@ -225,6 +235,9 @@ public class Geometrics {
             return result;
         }
 
+        /**
+         * Prints the areas of the shapes, with a header.
+         */
         void printAreas() {
             PrintTools.printWithHeader((getShape() + " areas: "), getAreaMsgs());
         }
@@ -237,6 +250,9 @@ public class Geometrics {
             return result;
         }
 
+        /**
+         * prints the perimeters of the shapes, with a header.
+         */
         void printPerimeters() {
             PrintTools.printWithHeader((getShape() + " perimeters: "), getPerimeterMsgs());
         }
@@ -255,7 +271,7 @@ public class Geometrics {
             int count = (int) Math.pow(limit, 2);
             Rectangle[] shapes = new Rectangle[count];
             for (int i = 0; i < shapes.length; i++) {
-                double[] dimensions = new double[] { (i / limit + 1), (i % limit + 1) };
+                double[] dimensions = { (i / limit + 1), (i % limit + 1) };
                 shapes[i] = new Rectangle(dimensions);
             }
             return new RectangleCollection(shapes);
@@ -276,7 +292,7 @@ public class Geometrics {
         static SquareCollection buildFromRange(int limit) {
             Square[] shapes = new Square[limit];
             for (int i = 0; i < shapes.length; i++) {
-                double[] dimensions = new double[] { (double) i + 1};
+                double[] dimensions = { (double) i + 1};
                 shapes[i] = new Square(dimensions);
             }
             return new SquareCollection(shapes);
@@ -288,6 +304,11 @@ public class Geometrics {
 
     }
 
+    /**
+     * Manages a collection of three-dimensional shapes. Provides methods to calculate and print surfaces and volumes in batch.
+     * 
+     * Subclasses provide a buildFromRange() method. For details, see the javadoc for Shape2DCollection.
+     */
     private abstract static class Shape3DCollection {
 
         final Shape3D[] shapes;
@@ -313,7 +334,7 @@ public class Geometrics {
         String[] getSurfaceMsgs() {
             String[] result = new String[shapes.length];
             for (int i = 0; i < result.length; i++) {
-                result[i] = shapes[i].volumeMsg();
+                result[i] = shapes[i].surfaceMsg();
             }
             return result;
         }
@@ -334,7 +355,7 @@ public class Geometrics {
             int count = (int) Math.pow(limit, 3);
             Cuboid[] shapes = new Cuboid[count];
             for (int i = 0; i < shapes.length; i++) {
-                double[] dimensions = new double[] {
+                double[] dimensions = {
                     (i / limit) / limit + 1,
                     (i / limit) % limit + 1,
                     (i % limit) + 1 // or (i % limit) % limit + 1
@@ -359,7 +380,7 @@ public class Geometrics {
         static CubeCollection buildFromRange(int limit) {
             Cube[] shapes = new Cube[limit];
             for (int i = 0; i < shapes.length; i++) {
-                double[] dimensions = new double[] { i };
+                double[] dimensions = { i + 1 };
                 shapes[i] = new Cube(dimensions);
             }
             return new CubeCollection(shapes);
