@@ -2,50 +2,172 @@ package geo;
 
 import java.util.List;
 
-import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
+// import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Geometrics {
-    private static double x = 10.0;
-    private static double y = 5.0;
-    private static double z = 3.0;
-    private static int x1 = 8;
-    private static int y1 = 7;
-    private static int z1 = 10;
-    private static int x2 = 100;
-    private static int y2 = 57;
-    private static int z2 = 129;
-    private static int x3 = 45;
-    private static int y3 = 89;
-    private static int z3 = 69;
+    // issue: I tried doing stuff like make Rectangle.area(double[] dimensions)  a static method, 
+    // but static abstract methods are impossible.
 
-    public static void main(String[] args) {
+    private abstract static class Shape {
 
-        RectangleCollector myColl = RectangleCollector.buildFromRange(4);
-        PrintTools.printLines(myColl.getAreas());
-        PrintTools.printLines(myColl.getPerimeters());
+        final double[] dimensions;
 
-        SquareCollector mySquares = SquareCollector.buildFromRange(4);
-        PrintTools.printLines(mySquares.getAreas());
-        PrintTools.printLines(mySquares.getPerimeters());
+        Shape(double[] dimensions) {
+            this.dimensions = dimensions;
+        }
+
+        abstract String paramsMsg();
 
 
-        System.out.println("We can also calculate some volumes");
 
-        System.out.println("Zone of a sphere");
-        System.out.println(ZoneOfASphere.volume(10.0, 5.0, 3.0));
-
-        System.out.println("Sphere with cylinder");
-        System.out.println(SphereWithCylinder.volume(3.0));
-
-        System.out.println("Ungula");
-        System.out.println(Ungula.volume(45.0, 69.0));
     }
 
+    private abstract static class Shape2D extends Shape {
 
-    private class PrintTools {
+        Shape2D(double[] dimensions) {
+            super(dimensions);
+        }
+
+        abstract double getArea();
+        abstract double getPerimeter();
+
+        String areaMsg() {
+            return paramsMsg() + ", area: " + getArea();
+        }
+
+        String perimeterMsg() {
+            return paramsMsg() + ", perimeter: " + getPerimeter();
+        }
+
+    }
+
+    private static class Rectangle extends Shape2D {
+
+        Rectangle(double[] dimensions) {
+            super(dimensions);
+        }
+
+        double getArea() {
+            return (dimensions[0] * dimensions[1]);
+        }
+
+        double getPerimeter() {
+            return ( 2 * (dimensions[0] + dimensions[1]) );
+        }
+
+        String paramsMsg() {
+            return "length: " + dimensions[0] + ", width: " + dimensions[1];
+        }
+
+    }
+
+    private static class Square extends Shape2D {
+
+        Square(double[] dimensions) {
+            super(dimensions);
+        }
+
+        double getArea() {
+            return Math.pow(dimensions[0], 2);
+        }
+
+        double getPerimeter() {
+            return (dimensions[0] * 4);
+        }
+
+        String paramsMsg() {
+            return "length: " + dimensions[0];
+        }
+
+    }
+
+    private abstract static class Shape3D extends Shape {
+
+        Shape3D(double[] dimensions) {
+            super(dimensions);
+        }
+
+        abstract double getVolume();
+        abstract double getSurface();
+
+
+        String volumeMsg() {
+            return paramsMsg() + ", volume: " + getVolume();
+        }
+
+        String surfaceMsg() {
+            return paramsMsg() + ", perimeter: " + getVolume();
+        }
+
+    }
+
+    private static class Cuboid extends Shape3D {
+
+        Cuboid(double[] dimensions) {
+            super(dimensions);
+        }
+
+        double getVolume() {
+            return dimensions[0] * dimensions[1] * dimensions[2];
+        }
+        
+        double getSurface() {
+            // backlog: i could just store those as fields internally
+            double x = dimensions[0];
+            double y = dimensions[1];
+            double z = dimensions[2];
+            return 2 * (x*y + x*z + y*z);
+        }
+
+        String paramsMsg() {
+            return "x: " + dimensions[0] + ", y: " + dimensions[1] + ", z: " + dimensions[2];
+        }
+
+    }
+
+    private static class Cube extends Shape3D {
+
+        Cube(double[] dimensions) {
+            super(dimensions);
+        }
+
+        double getVolume() {
+            return Math.pow(dimensions[0], 3);
+        }
+        
+        double getSurface() {
+            return 6 * Math.pow(dimensions[0], 2);
+        }
+
+        String paramsMsg() {
+            return "edge length: " + dimensions[0];
+        }
+
+    }
+
+    // properly subclassing the other figures would be too complex, so I'll just set up some methods
+    private static class ZoneOfASphere {
+        static double volume(double x, double y, double z) {
+            return (Math.PI * z * (3 * Math.pow(y, 2) + 3 * Math.pow(x, 2) + Math.pow(z, 2))) / 6;
+        }
+    }
+
+    private static class SphereWithCylinder {
+        static double volume(double z) {
+            return Math.PI * Math.pow(z, 3) / 6;
+        }
+    }
+
+    private static class Ungula {
+        static double volume(double x, double z) {
+            return (2.0 * Math.pow(x, 2) * z) / 3.0;
+        }
+    }
+
+    private static class PrintTools {
 
         static void printLines(String[] lines) {
             for (String line : lines) {
@@ -55,188 +177,114 @@ public class Geometrics {
         }
 
         static String[] messageWithHeader(String header, String[] msgs) {
-            String[] result = new String[msgs.length + 1];
+            String[] result = new String[msgs.length + 2];
             result[0] = header;
             for (int i = 0; i < msgs.length; i++) {
                 result[i+1] = msgs[i];
             }
+            result[result.length -1] = "-------------";
             return result;
+        }
+
+        static void printWithHeader(String header, String[] msgs) {
+            printLines(messageWithHeader(header, msgs));
         }
 
     }
 
-    private static class RectangleCollector {
+    // private abstract static class ShapeCollection {
 
-        private final int count;
-        private final double[] lengths;
-        private final double[] widths;
+    //     final Shape[] shapes;
 
-        static RectangleCollector buildFromRange(int limit) {
-            double[] lengths = new double[limit * limit];
-            double[] widths = new double[limit * limit];
+    //     ShapeCollection(Shape[] shapes) {
+    //         this.shapes = shapes;
+    //     }
 
-            int k = 0;
-            // int l = 0;
-            for (int iInt = 0; iInt < limit; iInt++) {
-                double i = (double) (iInt+1);
-                
-                for (int jInt = 0; jInt < limit; jInt++) {
-                    double j = (double) (jInt+1);
-                    lengths[k] = i;
-                    widths[k] = j;
-                    k++;
-                }
-                
-            }
-            
-            return new RectangleCollector(lengths, widths);
-        }
         
-        RectangleCollector(double[] lengths, double[] widths) {
-            this.count = lengths.length;
-            if (this.count != widths.length) {
-                // backlog: throw a proper exception
-                System.out.println("Error: number of lengths and widths must be equal!");
-            }
-            this.lengths = lengths;
-            this.widths = widths;
+
+    // }
+
+    private abstract static class Shape2DCollection  {
+
+        final Shape2D[] shapes;
+
+        Shape2DCollection(Shape2D[] shapes) {
+            // super(shapes);
+            this.shapes = shapes;
         }
 
-
-        String[] getAreas() {
-            return PrintTools.messageWithHeader("Rectangle area: ", calculateAreas());
-        }
-
-        String[] calculateAreas() {
-            String[] result = new String[count];
+        String[] getAreaMsgs() {
+            String[] result = new String[shapes.length];
             for (int i = 0; i < result.length; i++) {
-                result[i] = Rectangle.areaMsg(lengths[i], widths[i]);
+                result[i] = shapes[i].areaMsg();
             }
             return result;
         }
 
-        String[] getPerimeters() {
-            return PrintTools.messageWithHeader("Rectangle perimeters: ", calculatePerimeters());
+        void printAreas() {
+            PrintTools.printWithHeader("Rectangle areas: ", getAreaMsgs());
         }
 
-        String[] calculatePerimeters() {
-            String[] result = new String[count];
+        String[] getPerimeterMsgs() {
+            String[] result = new String[shapes.length];
             for (int i = 0; i < result.length; i++) {
-                result[i] = Rectangle.perimeterMsg(lengths[i], widths[i]);
+                result[i] = shapes[i].perimeterMsg();
             }
             return result;
         }
 
+        void printPerimeters() {
+            PrintTools.printWithHeader("Rectangle perimeters: ", getPerimeterMsgs());
+        }
+
+        // define abstract static method buildFromRange here?
+
     }
 
-    private static class SquareCollector {
+    private static class RectangleCollection extends Shape2DCollection {
 
-        private final double[] lengths;
+        RectangleCollection(Rectangle[] shapes) {
+            super(shapes);
+        }
 
-        static SquareCollector buildFromRange(int limit) {
-            double[] lengths = new double[limit];
-            for (int i = 0; i < lengths.length; i++) {
-                lengths[i] = (double) (i + 1);
+        static RectangleCollection buildFromRange(int limit) {
+            int count = (int) Math.pow(limit, 2);
+            Rectangle[] shapes = new Rectangle[count];
+            for (int i = 0; i < shapes.length; i++) {
+                double[] dimensions = new double[] { (i / limit + 1), (i % limit + 1) };
+                shapes[i] = new Rectangle(dimensions);
             }
-            return new SquareCollector(lengths);
+            return new RectangleCollection(shapes);
         }
 
-        SquareCollector(double[] lengths) {
-            this.lengths = lengths;
+    }
+
+    private static class SquareCollection extends Shape2DCollection {
+
+        SquareCollection(Square[] shapes) {
+            super(shapes);
         }
 
-        // backlog: stuff like this could be easily refactored  out to a superclass
-        String[] getAreas() {
-            return PrintTools.messageWithHeader("Square area: ", calculateAreas());
-        }
-
-        String[] calculateAreas() {
-            String[] result = new String[lengths.length];
-            for (int i = 0; i < result.length; i++) {
-                result[i] = Square.areaMsg(lengths[i]);
+        static SquareCollection buildFromRange(int limit) {
+            Square[] shapes = new Square[limit];
+            for (int i = 0; i < shapes.length; i++) {
+                double[] dimensions = new double[] { (double) i + 1};
+                shapes[i] = new Square(dimensions);
             }
-            return result;
-        }
-
-        String[] getPerimeters() {
-            return PrintTools.messageWithHeader("Rectangle perimeter: ", calculatePerimeters());
-        }
-
-        String[] calculatePerimeters() {
-            String[] result = new String[lengths.length];
-            for (int i = 0; i < result.length; i++) {
-                result[i] = Square.perimterMsg(lengths[i]);
-            }
-            return result;
+            return new SquareCollection(shapes);
         }
 
     }
 
-    private  class Rectangle {
 
-        static double area(double len, double wid) {
-            return len * wid;
-        }
+    public static void main(String[] args) {
+        
+        RectangleCollection myRectangles = RectangleCollection.buildFromRange(4);
+        myRectangles.printAreas();
 
-        static double perimeter(double len, double wid) {
-            return ((len + wid) * 2);
-        }
-
-
-        static String paramsMsg(double len, double wid) {
-            return "len: " + len + ", wid: " + wid + ", ";
-        }
-
-        static String areaMsg(double len, double wid) {
-            return paramsMsg(len, wid) + "area: " + area(len, wid);
-        }
-
-        static String perimeterMsg(double len, double wid) {
-            return paramsMsg(len, wid) + "perimeter: " + perimeter(len, wid);
-        }
+        SquareCollection mySquares = SquareCollection.buildFromRange(8);
+        mySquares.printAreas();
 
     }
-
-    private  class Square extends Rectangle {
-
-        static double area(double len) {
-            return area(len, len);
-        }
-
-        static double perimeter(double len) {
-            return perimeter(len, len);
-        }
-
-        static String paramsMsg(double len) {
-            return "len: " + len + ", ";
-        }
-
-        static String areaMsg(double len) {
-            return paramsMsg(len) + "area: " + area(len);
-        }
-
-        static String perimterMsg(double len) {
-            return paramsMsg(len) + "perimeter: " + perimeter(len);
-        }
-
-    }
-
-    private class ZoneOfASphere {
-        static double volume(double x, double y, double z) {
-            return (Math.PI * z * (3 * Math.pow(y, 2) + 3 * Math.pow(x, 2) + Math.pow(z, 2))) / 6;
-        }
-    }
-
-    private class SphereWithCylinder {
-        static double volume(double z) {
-            return Math.PI * Math.pow(z, 3) / 6;
-        }
-    }
-
-    private class Ungula {
-        static double volume(double x, double z) {
-            return (2.0 * Math.pow(x, 2) * z) / 3.0;
-        }
-    }
-
+    
 }
