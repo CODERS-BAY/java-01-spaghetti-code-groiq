@@ -2,6 +2,8 @@ package geo;
 
 import java.util.List;
 
+// import geo.Geometrics.Shape3DCollection.CuboidCollection;
+
 // import jdk.javadoc.internal.doclets.formats.html.SourceToHTMLConverter;
 
 import java.util.ArrayList;
@@ -213,6 +215,8 @@ public class Geometrics {
             this.shapes = shapes;
         }
 
+        abstract String getShape();
+
         String[] getAreaMsgs() {
             String[] result = new String[shapes.length];
             for (int i = 0; i < result.length; i++) {
@@ -222,7 +226,7 @@ public class Geometrics {
         }
 
         void printAreas() {
-            PrintTools.printWithHeader("Rectangle areas: ", getAreaMsgs());
+            PrintTools.printWithHeader((getShape() + " areas: "), getAreaMsgs());
         }
 
         String[] getPerimeterMsgs() {
@@ -234,7 +238,7 @@ public class Geometrics {
         }
 
         void printPerimeters() {
-            PrintTools.printWithHeader("Rectangle perimeters: ", getPerimeterMsgs());
+            PrintTools.printWithHeader((getShape() + " perimeters: "), getPerimeterMsgs());
         }
 
         // define abstract static method buildFromRange here?
@@ -257,6 +261,10 @@ public class Geometrics {
             return new RectangleCollection(shapes);
         }
 
+        String getShape() {
+            return "Rectangle";
+        }
+
     }
 
     private static class SquareCollection extends Shape2DCollection {
@@ -274,16 +282,115 @@ public class Geometrics {
             return new SquareCollection(shapes);
         }
 
+        String getShape() {
+            return "Square";
+        }
+
+    }
+
+    private abstract static class Shape3DCollection {
+
+        final Shape3D[] shapes;
+
+        Shape3DCollection(Shape3D[] shapes) {
+            this.shapes = shapes;
+        }
+
+        abstract String getShape();
+
+        String[] getVolumeMsgs() {
+            String[] result = new String[shapes.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = shapes[i].volumeMsg();
+            }
+            return result;
+        }
+
+        void printVolumes() {
+            PrintTools.printWithHeader((getShape() + " volumes: "), getVolumeMsgs());
+        }
+
+        String[] getSurfaceMsgs() {
+            String[] result = new String[shapes.length];
+            for (int i = 0; i < result.length; i++) {
+                result[i] = shapes[i].volumeMsg();
+            }
+            return result;
+        }
+
+        void printSurfaces() {
+            PrintTools.printWithHeader((getShape() + " surfaces: "), getSurfaceMsgs());
+        }
+
+    }
+
+    private static class CuboidCollection extends Shape3DCollection {
+
+        CuboidCollection(Cuboid[] shapes) {
+            super(shapes);
+        }
+
+        static CuboidCollection buildFromRange(int limit) {
+            int count = (int) Math.pow(limit, 3);
+            Cuboid[] shapes = new Cuboid[count];
+            for (int i = 0; i < shapes.length; i++) {
+                double[] dimensions = new double[] {
+                    (i / limit) / limit + 1,
+                    (i / limit) % limit + 1,
+                    (i % limit) + 1 // or (i % limit) % limit + 1
+                };
+                shapes[i] = new Cuboid(dimensions);
+            }
+            return new CuboidCollection(shapes);
+        }
+
+        String getShape() {
+            return "Cuboid";
+        }
+
+    }
+
+    private static class CubeCollection extends Shape3DCollection {
+
+        CubeCollection(Cube[] shapes) {
+            super(shapes);
+        }
+
+        static CubeCollection buildFromRange(int limit) {
+            Cube[] shapes = new Cube[limit];
+            for (int i = 0; i < shapes.length; i++) {
+                double[] dimensions = new double[] { i };
+                shapes[i] = new Cube(dimensions);
+            }
+            return new CubeCollection(shapes);
+        }
+
+        String getShape() {
+            return "Cube";
+        }
+
     }
 
 
     public static void main(String[] args) {
         
         RectangleCollection myRectangles = RectangleCollection.buildFromRange(4);
+        myRectangles.printPerimeters();
         myRectangles.printAreas();
 
         SquareCollection mySquares = SquareCollection.buildFromRange(8);
+        mySquares.printPerimeters();
         mySquares.printAreas();
+
+
+        CuboidCollection myCuboids = CuboidCollection.buildFromRange(2);
+        myCuboids.printSurfaces();
+        myCuboids.printVolumes();
+
+
+        CubeCollection myCubes = CubeCollection.buildFromRange(8);
+        myCubes.printSurfaces();
+        myCubes.printVolumes();
 
     }
     
